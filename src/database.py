@@ -14,11 +14,15 @@ db = mongo['bot_assistant']
 tasks_coll = db['tasks']
 
 
+async def set_task_id(task: dict):
+    task['task_id'] = str(task['_id'])
+
+
 async def db_parser(cursor: Cursor) -> list[ResTask]:
     ''' parse data from database into lists '''
     items = []
     for doc in cursor:
-        doc['task_id'] = str(doc['_id'])
+        await set_task_id(doc)
         items.append(
             ResTask(**doc))
     return items
@@ -33,13 +37,12 @@ async def get_all() -> list[ResTask]:
 async def create_task(task: dict):
     task['created_at'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     task['last_updated'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-
+    await set_task_id(task)
     if 'deadline' in task:
         new = tasks_coll.insert_one(task)
         task_id = tasks_coll.find_one(
             {'_id': new.inserted_id}
         )
-        task['task_id'] = str(task_id['_id'])
         return task
 
     task['deadline'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
@@ -47,7 +50,6 @@ async def create_task(task: dict):
     task_id = tasks_coll.find_one(
         {'_id': new.inserted_id}
     )
-    task['task_id'] = str(task_id['_id'])
     return task
 
 
