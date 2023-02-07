@@ -26,7 +26,7 @@ class Task(BaseModel):
     username: str
     task: str
     task_detail: str
-    status: Status = Status.PENDING
+    status: Status = Status.NOTED
     created_at: str = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     last_updated: str = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     deadline: str = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
