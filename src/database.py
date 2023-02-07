@@ -34,15 +34,34 @@ async def db_parser(cursor: Cursor) -> list[ResTask]:
     return items
 
 
-async def get_all(username: Optional[Usernames] = None) -> list[ResTask]:
-    name = username.value if username is not None else ''
-    if name == '':
+async def query_parser(for_name: str, by_name: str):
+
+    if for_name == '' and by_name == '':
         conn = conn = tasks_coll.find()
-        result = await db_parser(conn)
-        return result
+        return conn
+    if by_name == '':
+        conn = tasks_coll.find({
+            'username': for_name,
+        })
+        return conn
+    if for_name == '':
+        conn = tasks_coll.find({
+            'from_user.username': by_name,
+        })
+        return conn
+
     conn = tasks_coll.find({
-        'username': name
+        'username': for_name,
+        'from_user.username': by_name
     })
+    return conn
+
+
+async def get_all(for_username: Usernames = None, by_username: Usernames = None) -> list[ResTask]:
+
+    for_name = for_username.value if for_username is not None else ''
+    by_name = by_username.value if by_username is not None else ''
+    conn = await query_parser(for_name, by_name)
     result = await db_parser(conn)
     return result
 
@@ -50,6 +69,7 @@ async def get_all(username: Optional[Usernames] = None) -> list[ResTask]:
 async def create_task(task: dict):
     task['created_at'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     task['last_updated'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+
     if 'deadline' in task:
         new = tasks_coll.insert_one(task)
         task_id = tasks_coll.find_one(
@@ -60,10 +80,12 @@ async def create_task(task: dict):
         return task
 
     task['deadline'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+
     new = tasks_coll.insert_one(task)
     task_id = tasks_coll.find_one(
         {'_id': new.inserted_id}
     )
+
     await set_task_id(task, task_id)
     return task
 
@@ -81,5 +103,6 @@ async def update_task(task_id: str, updates: dict):
             'task_id': task_id
         }
     })
+
     find = tasks_coll.find_one({'_id': ObjectId(task_id)})
     return find

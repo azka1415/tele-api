@@ -10,8 +10,8 @@ router = APIRouter(
 
 
 @router.get('', response_model=list[ResTask])
-async def get_all_tasks(username: Optional[Usernames] = None):
-    result = await database.get_all(username)
+async def get_all_tasks(for_username: Optional[Usernames] = None, by_username: Optional[Usernames] = None):
+    result = await database.get_all(for_username, by_username)
     return result
 
 
