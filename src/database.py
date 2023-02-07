@@ -1,11 +1,12 @@
 from dotenv import find_dotenv, load_dotenv
-from pymongo import MongoClient, ReturnDocument
+from pymongo import MongoClient
 from pymongo.cursor import Cursor
 import os
-from src.models import ResTask, Usernames
+from src.models import ResTask, Usernames, UsernamesAndId
 from datetime import datetime
 from typing import Optional
 from bson.objectid import ObjectId
+from fastapi import HTTPException
 load_dotenv(find_dotenv())
 
 mongo = MongoClient(os.getenv('MONGO_URL'))
@@ -66,9 +67,16 @@ async def get_all(for_username: Usernames = None, by_username: Usernames = None)
     return result
 
 
-async def create_task(task: dict):
+async def create_task(task: dict, task_creator: str):
     task['created_at'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     task['last_updated'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+    try:
+        task['from_user'] = {
+            'username': task_creator,
+            'user_id': UsernamesAndId[task_creator].value
+        }
+    except Exception as e:
+        raise HTTPException(404, 'Not a Valid User')
 
     if 'deadline' in task:
         new = tasks_coll.insert_one(task)

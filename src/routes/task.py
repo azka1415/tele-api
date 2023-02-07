@@ -16,8 +16,8 @@ async def get_all_tasks(for_username: Optional[Usernames] = None, by_username: O
 
 
 @router.post('', response_model=ResTask)
-async def create_task(task: NewTask):
-    result = await database.create_task(task.dict())
+async def create_task(task: NewTask, task_creator: Usernames):
+    result = await database.create_task(task.dict(), task_creator.value)
     return result
 
 
