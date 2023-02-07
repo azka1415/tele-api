@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
 from typing import Optional
@@ -26,6 +26,7 @@ class Task(BaseModel):
     username: str
     task: str
     task_detail: str
+    from_user: str
     status: Status = Status.NOTED
     created_at: str = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     last_updated: str = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
