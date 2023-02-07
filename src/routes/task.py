@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 import src.database as database
 from src.models import NewTask
-from src.models import Task, ResTask
+from src.models import ResTask, UpdateTask
 
 router = APIRouter(
     prefix='/task',
@@ -21,11 +21,10 @@ async def create_task(task: NewTask):
     return result
 
 
-@router.put('/{id}')
-async def update_task(task_id: str, task: Task):
-
-    print(task_id)
-    return task_id
+@router.put('/{task_id}', response_model=ResTask)
+async def update_task(task_id: str, task: UpdateTask):
+    res = await database.update_task(task_id, task.dict())
+    return res
 
 
 @router.delete('/{id}')
