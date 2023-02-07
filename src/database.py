@@ -31,7 +31,6 @@ async def db_parser(cursor: Cursor) -> list[ResTask]:
         await set_task_id(doc)
         items.append(
             ResTask(**doc))
-        print(doc)
     return items
 
 
@@ -74,6 +73,6 @@ async def update_task(task_id: str, updates: dict):
             'deadline': updates['deadline'],
             'task_id': task_id
         }
-    }, return_document=ReturnDocument.AFTER)
+    })
     find = tasks_coll.find_one({'_id': ObjectId(task_id)})
     return find
