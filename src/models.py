@@ -26,8 +26,16 @@ class NewTask(BaseModel):
     task: str
     task_detail: str
     status: Status = Status.ON_PROGRESS
-    deadline: str
+    deadline: str = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
 
 
 class ResTask(Task):
     task_id: str
+
+
+class UpdateTask(BaseModel):
+    username: str
+    task: str
+    task_detail: str
+    status: Status = Status.ON_PROGRESS
+    deadline: Optional[str] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
