@@ -2,7 +2,7 @@ from dotenv import find_dotenv, load_dotenv
 from pymongo import MongoClient, ReturnDocument
 from pymongo.cursor import Cursor
 import os
-from src.models import Task, ResTask
+from src.models import ResTask
 from datetime import datetime
 from typing import Optional
 from bson.objectid import ObjectId
@@ -64,7 +64,7 @@ async def create_task(task: dict):
 
 async def update_task(task_id: str, updates: dict):
 
-    res = tasks_coll.find_one_and_update({'_id': ObjectId(task_id)}, {
+    tasks_coll.find_one_and_update({'_id': ObjectId(task_id)}, {
         '$set': {
             'username': updates['username'],
             'task': updates['task'],
