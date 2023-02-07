@@ -22,6 +22,16 @@ class Usernames(str, Enum):
     rizal = "rizalwidiatmaja"
 
 
+class UsernamesAndId(dict, Enum):
+    iki = {'user_id': 1211950206, 'username': "iki_be_ph"}
+    alfa = {'user_id': 1268637225, 'username': "urbiscuit"}
+    arigo = {'user_id': 1415008365, 'username': "Arigofhrz"}
+    nasri = {'user_id': 731203660, 'username': "nanassssa"}
+    nathan = {'user_id': 1239587269, 'username': "nathan_aptanta"}
+    okta = {'user_id': 916823025, 'username': "Oktapiancaw"}
+    rizal = {'user_id': 757866026, 'username': "rizalwidiatmaja"}
+
+
 class FromUser(dict):
     username: str
     user_id: int
