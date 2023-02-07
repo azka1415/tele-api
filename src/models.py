@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from datetime import datetime
 from enum import Enum
 from typing import Optional
@@ -22,11 +22,16 @@ class Usernames(str, Enum):
     rizal = "rizalwidiatmaja"
 
 
+class FromUser(dict):
+    username: str
+    user_id: int
+
+
 class Task(BaseModel):
     username: str
     task: str
     task_detail: str
-    from_user: str
+    from_user: FromUser
     status: Status = Status.NOTED
     created_at: str = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     last_updated: str = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
