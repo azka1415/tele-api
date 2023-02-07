@@ -2,7 +2,7 @@ from dotenv import find_dotenv, load_dotenv
 from pymongo import MongoClient, ReturnDocument
 from pymongo.cursor import Cursor
 import os
-from src.models import ResTask
+from src.models import ResTask, Usernames
 from datetime import datetime
 from typing import Optional
 from bson.objectid import ObjectId
@@ -34,8 +34,12 @@ async def db_parser(cursor: Cursor) -> list[ResTask]:
     return items
 
 
-async def get_all() -> list[ResTask]:
-    conn = tasks_coll.find()
+async def get_all(username: Optional[Usernames] = None) -> list[ResTask]:
+    name = username.value if username is not None else ''
+    print(name)
+    conn = tasks_coll.find({
+        'username': name
+    })
     result = await db_parser(conn)
     return result
 
