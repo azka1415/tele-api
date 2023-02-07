@@ -11,6 +11,17 @@ class Status(str, Enum):
     NOTED = 'NOTED'
 
 
+class Usernames(str, Enum):
+    alfa = "urbiscuit"
+    arigo = "Arigofhrz"
+    iki = "iki_be_ph"
+    nasri = "nanassssa"
+    nathan = "nathan_aptanta"
+    okta = "Oktapiancaw"
+    pasca = "pascarmdn"
+    rizal = "rizalwidiatmaja"
+
+
 class Task(BaseModel):
     username: str
     task: str
