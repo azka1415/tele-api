@@ -36,7 +36,10 @@ async def db_parser(cursor: Cursor) -> list[ResTask]:
 
 async def get_all(username: Optional[Usernames] = None) -> list[ResTask]:
     name = username.value if username is not None else ''
-    print(name)
+    if name == '':
+        conn = conn = tasks_coll.find()
+        result = await db_parser(conn)
+        return result
     conn = tasks_coll.find({
         'username': name
     })
