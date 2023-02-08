@@ -27,6 +27,7 @@ async def update_task(task_id: str, task: UpdateTask):
     return res
 
 
-@router.delete('/{id}')
+@router.delete('/{task_id}', status_code=204)
 async def delete_task(task_id: str):
-    pass
+    await database.delete_task(task_id)
+    return {"detail": 'Task Deleted Successfully'}
