@@ -1,5 +1,5 @@
 from dotenv import find_dotenv, load_dotenv
-from pymongo import MongoClient
+from pymongo import MongoClient, ReturnDocument
 from pymongo.cursor import Cursor
 import os
 from src.models import ResTask, Usernames, UsernamesAndId
@@ -76,7 +76,8 @@ async def create_task(task: dict, task_creator: str):
             'user_id': UsernamesAndId[task_creator].value
         }
     except Exception as e:
-        raise HTTPException(404, 'Not a Valid User')
+        user = str(e).replace("'", '')
+        raise HTTPException(404, f"{user} is not a valid user")
 
     if 'deadline' in task:
         new = tasks_coll.insert_one(task)
@@ -100,7 +101,7 @@ async def create_task(task: dict, task_creator: str):
 
 async def update_task(task_id: str, updates: dict):
 
-    tasks_coll.find_one_and_update({'_id': ObjectId(task_id)}, {
+    res = tasks_coll.find_one_and_update({'_id': ObjectId(task_id)}, {
         '$set': {
             'username': updates['username'],
             'task': updates['task'],
@@ -110,7 +111,14 @@ async def update_task(task_id: str, updates: dict):
             'deadline': updates['deadline'],
             'task_id': task_id
         }
-    })
-
+    }, return_document=ReturnDocument.AFTER)
+    if res is None:
+        raise HTTPException(404, 'Task not found')
     find = tasks_coll.find_one({'_id': ObjectId(task_id)})
     return find
+
+
+async def delete_task(task_id: str):
+    res = tasks_coll.find_one_and_delete({'_id': ObjectId(task_id)})
+    if res is None:
+        raise HTTPException(404, 'Task not found')
