@@ -31,3 +31,9 @@ async def update_task(task_id: str, task: UpdateTask):
 async def delete_task(task_id: str):
     await database.delete_task(task_id)
     return {"detail": 'Task Deleted Successfully'}
+
+
+@router.get('/new', response_model=list[ResTask])
+async def get_all_tasks_new():
+    result = await database.get_all()
+    return result
