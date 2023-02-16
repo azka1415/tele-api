@@ -75,9 +75,9 @@ async def create_task(task: dict, task_creator: str):
             'username': task_creator,
             'user_id': UsernamesAndId[task_creator].value
         }
-    except Exception as e:
-        user = str(e).replace("'", '')
-        raise HTTPException(404, f"{user} is not a valid user")
+    except Exception as user_error:
+        user = str(user_error).replace("'", '')
+        raise HTTPException(404, f"{user} is not a valid user") from user_error
 
     if 'deadline' in task:
         new = tasks_coll.insert_one(task)
@@ -122,3 +122,31 @@ async def delete_task(task_id: str):
     res = tasks_coll.find_one_and_delete({'_id': ObjectId(task_id)})
     if res is None:
         raise HTTPException(404, 'Task not found')
+
+
+async def get_task_by_month(deadline: str):
+    month = deadline.split("/")[1]
+    if int(month) > 12:
+        raise HTTPException(404, 'Invalid Month')
+    get_by_month = tasks_coll.find({
+        "deadline": {
+            "$regex": f".*/{month}/.*"
+        }
+    }
+    )
+    res = await db_parser(get_by_month)
+    return res
+
+
+async def get_task_by_day(deadline: str):
+    day = deadline.split("/")[0]
+    if int(day) > 31:
+        raise HTTPException(404, 'Invalid Day')
+    get_by_day = tasks_coll.find({
+        "deadline": {
+            "$regex": f"{day}/.*/.*"
+        }
+    }
+    )
+    res = await db_parser(get_by_day)
+    return res

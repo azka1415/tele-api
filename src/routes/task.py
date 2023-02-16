@@ -37,3 +37,15 @@ async def delete_task(task_id: str):
 async def get_all_tasks_new():
     result = await database.get_all()
     return result
+
+
+@router.get('/deadline-month', response_model=list[ResTask])
+async def get_tasks_by_month(deadline_month: str):
+    res = await database.get_task_by_month(deadline_month)
+    return res
+
+
+@router.get('/deadline-day')
+async def get_tasks_by_day(deadline_day: str):
+    res = await database.get_task_by_day(deadline_day)
+    return res
