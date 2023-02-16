@@ -1,7 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 import src.database as database
 from src.models import NewTask
-from src.models import ResTask, UpdateTask, Usernames
+from src.models import ResTask, UpdateTask, Usernames, MonthQuery, DayQuery
 from typing import Optional
 router = APIRouter(
     prefix='/task',
@@ -40,12 +40,12 @@ async def get_all_tasks_new():
 
 
 @router.get('/deadline-month', response_model=list[ResTask])
-async def get_tasks_by_month(deadline_month: str):
+async def get_tasks_by_month(deadline_month: MonthQuery = Depends()):
     res = await database.get_task_by_month(deadline_month)
     return res
 
 
 @router.get('/deadline-day')
-async def get_tasks_by_day(deadline_day: str):
+async def get_tasks_by_day(deadline_day: DayQuery = Depends()):
     res = await database.get_task_by_day(deadline_day)
     return res

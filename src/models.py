@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from fastapi import Query
 from enum import Enum
 from typing import Optional
 
@@ -66,3 +67,13 @@ class UpdateTask(BaseModel):
     task_detail: str
     status: Status = Status.ON_PROGRESS
     deadline: Optional[str] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+
+
+class MonthQuery:
+    def __init__(self, month: str = Query(..., description='example: 11/02/2023')):
+        self.month = month
+
+
+class DayQuery:
+    def __init__(self, day: str = Query(..., description='example: 11/02/2023')):
+        self.day = day
