@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 import src.controllers.task as task
-from src.models.task import NewTask
-from src.models.task import ResTask, UpdateTask, Usernames, MonthQuery, DayQuery
+from src.models.task import ResTask, UpdateTask, NewTask, MonthQuery, DayQuery
+from src.models.utils import Usernames
 from typing import Optional
 router = APIRouter(
     prefix='/task',

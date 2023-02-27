@@ -1,6 +1,7 @@
 from pymongo import ReturnDocument
 from pymongo.cursor import Cursor
-from src.models.task import ResTask, Usernames, UsernamesAndId
+from src.models.task import ResTask
+from src.models.utils import Usernames, UsernamesAndId
 from src.database.client import mongo
 from datetime import datetime
 from typing import Optional
