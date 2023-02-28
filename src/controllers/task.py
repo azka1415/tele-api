@@ -1,6 +1,6 @@
 from pymongo import ReturnDocument
 from pymongo.cursor import Cursor
-from src.models.task import ResTask
+from src.models.task import ResTask, DayQuery, MonthQuery
 from src.models.utils import Usernames, UsernamesAndId
 from src.database.client import mongo
 from datetime import datetime
@@ -122,8 +122,8 @@ async def delete_task(task_id: str):
         raise HTTPException(404, 'Task not found')
 
 
-async def get_task_by_month(deadline: str):
-    month = deadline.split("/")[1]
+async def get_task_by_month(deadline: MonthQuery):
+    month = deadline.month.split("/")[1]
     if int(month) > 12:
         raise HTTPException(404, 'Invalid Month')
     get_by_month = tasks.find({
@@ -136,8 +136,8 @@ async def get_task_by_month(deadline: str):
     return res
 
 
-async def get_task_by_day(deadline: str):
-    day = deadline.split("/")[0]
+async def get_task_by_day(deadline: DayQuery):
+    day = deadline.day.split("/")[0]
     if int(day) > 31:
         raise HTTPException(404, 'Invalid Day')
     get_by_day = tasks.find({
