@@ -15,7 +15,7 @@ tasks = db['tasks']
 
 
 async def set_task_id(task: dict, old_dict: Optional[dict] = False):
-
+    ''' set task id of task from _id or somewhere else'''
     if old_dict is not False:
         task['task_id'] = str(old_dict['_id'])
         return
@@ -34,7 +34,7 @@ async def db_parser(cursor: Cursor) -> list[ResTask]:
 
 
 async def query_parser(for_name: str, by_name: str):
-
+    ''' check and parse the given name and for name '''
     if for_name == '' and by_name == '':
         conn = conn = tasks.find()
         return conn
@@ -57,7 +57,7 @@ async def query_parser(for_name: str, by_name: str):
 
 
 async def get_all(for_username: Usernames = None, by_username: Usernames = None) -> list[ResTask]:
-
+    ''' get all tasks '''
     for_name = for_username.value if for_username is not None else ''
     by_name = by_username.value if by_username is not None else ''
     conn = await query_parser(for_name, by_name)
@@ -66,6 +66,7 @@ async def get_all(for_username: Usernames = None, by_username: Usernames = None)
 
 
 async def create_task(task: dict, task_creator: str):
+    '''create a task'''
     task['created_at'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     task['last_updated'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     try:
@@ -74,6 +75,7 @@ async def create_task(task: dict, task_creator: str):
             'user_id': UsernamesAndId[task_creator].value
         }
     except Exception as user_error:
+        ''' catch errors '''
         user = str(user_error).replace("'", '')
         raise HTTPException(404, f"{user} is not a valid user") from user_error
 
@@ -98,7 +100,7 @@ async def create_task(task: dict, task_creator: str):
 
 
 async def update_task(task_id: str, updates: dict):
-
+    ''' Update a task'''
     res = tasks.find_one_and_update({'_id': ObjectId(task_id)}, {
         '$set': {
             'username': updates['username'],
@@ -117,18 +119,23 @@ async def update_task(task_id: str, updates: dict):
 
 
 async def delete_task(task_id: str):
+    ''' Delete a task'''
     res = tasks.find_one_and_delete({'_id': ObjectId(task_id)})
     if res is None:
         raise HTTPException(404, 'Task not found')
 
 
 async def get_task_by_month(deadline: MonthQuery):
+    ''' Get a task by month'''
     month = deadline.month.split("/")[1]
     if int(month) > 12:
         raise HTTPException(404, 'Invalid Month')
     get_by_month = tasks.find({
         "deadline": {
             "$regex": f".*/{month}/.*"
+        },
+        "status": {
+            "$ne": "DONE"
         }
     }
     )
@@ -137,12 +144,16 @@ async def get_task_by_month(deadline: MonthQuery):
 
 
 async def get_task_by_day(deadline: DayQuery):
+    ''' Get a task by day'''
     day = deadline.day.split("/")[0]
     if int(day) > 31:
         raise HTTPException(404, 'Invalid Day')
     get_by_day = tasks.find({
         "deadline": {
             "$regex": f"{day}/.*/.*"
+        },
+        "status": {
+            "$ne": "DONE"
         }
     }
     )
